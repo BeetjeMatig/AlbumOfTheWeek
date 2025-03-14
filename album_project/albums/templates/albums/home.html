@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Album of the Week{% endblock %}
+
+{% block content %}
+  <div class="text-center">
+    <h1>Welcome to Album of the Week!</h1>
+    <p class="lead">Discover new albums and check out our weekly picks.</p>
+  </div>
+
+  <hr>
+
+  {% if weekly_pick %}
+    <div class="card mx-auto" style="max-width: 500px;">
+      <div class="card-header bg-dark text-white">
+        Album of the Week ({{ weekly_pick.week_start_date }} - {{ weekly_pick.week_end_date }})
+      </div>
+      <div class="card-body text-center">
+        <h5 class="card-title">{{ weekly_pick.album.artist }} - {{ weekly_pick.album.title }}</h5>
+        {% if weekly_pick.album.release_year %}
+          <p class="card-text">Released: {{ weekly_pick.album.release_year }}</p>
+        {% endif %}
+        {% if weekly_pick.album.genre %}
+          <p class="card-text"><strong>Genre:</strong> {{ weekly_pick.album.genre }}</p>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <p class="text-center">No album has been selected for this week yet.</p>
+  {% endif %}
+{% endblock %}

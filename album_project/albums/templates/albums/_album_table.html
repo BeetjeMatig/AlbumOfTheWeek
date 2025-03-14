@@ -1,0 +1,9 @@
+{% for album in albums %}
+  <tr>
+    <td>{{ album.artist }}</td>
+    <td>{{ album.title }}</td>
+    <td>{{ album.genre }}</td>
+    <td>{{ album.release_year }}</td>
+    <td>{{ album.submitted_by }}</td>
+  </tr>
+{% endfor %}

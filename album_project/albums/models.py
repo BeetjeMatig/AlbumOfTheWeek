@@ -5,8 +5,9 @@ from django.db import models
 class Album(models.Model):
     title = models.CharField(max_length=255)
     artist = models.CharField(max_length=255)
-    release_date = models.DateField(blank=True, null=True)
-    cover_url = models.URLField(blank=True, null=True)  # Optional field for album cover images
+    genre = models.CharField(max_length=100, blank=True, null=True)
+    release_year = models.PositiveIntegerField(blank=True, null=True)
+    submitted_by = models.CharField(max_length=255, blank=True, null=True)
     added_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

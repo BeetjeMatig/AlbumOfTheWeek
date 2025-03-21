@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Album, WeeklyPick, Review
+
+from .models import Album, Review, WeeklyPick
+
 
 @admin.register(Album)
 class AlbumAdmin(admin.ModelAdmin):

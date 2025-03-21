@@ -1,22 +1,24 @@
 {% extends "base.html" %}
-
 {% block title %}Previous Albums of the Week{% endblock %}
-
 {% block content %}
   <h2 class="mb-4 text-center">Previous Weekly Picks</h2>
-
   {% if picks %}
     <div class="list-group">
       {% for pick in picks %}
         <div class="list-group-item">
           <h5 class="mb-1">{{ pick.album.artist }} – {{ pick.album.title }}</h5>
-          <p class="mb-1"><strong>Genre:</strong> {{ pick.album.genre }} | <strong>Year:</strong> {{ pick.album.release_year }}</p>
-          <p class="mb-1"><strong>Week:</strong> {{ pick.week_start_date }} - {{ pick.week_end_date }}</p>
-
+          <p class="mb-1">
+            <strong>Genre:</strong> {{ pick.album.genre }} | <strong>Year:</strong> {{ pick.album.release_year }}
+          </p>
+          <p class="mb-1">
+            <strong>Week:</strong> {{ pick.week_start_date }} - {{ pick.week_end_date }}
+          </p>
           <div class="mt-2">
-            <a href="{% url 'view_reviews' %}?pick={{ pick.id }}" class="btn btn-outline-primary btn-sm">View Reviews</a>
+            <a href="{% url 'view_reviews' %}?pick={{ pick.id }}"
+               class="btn btn-outline-primary btn-sm">View Reviews</a>
             {% if user.is_authenticated %}
-              <a href="{% url 'write_review' %}?pick={{ pick.id }}" class="btn btn-outline-success btn-sm ms-2">Write Review</a>
+              <a href="{% url 'write_review' %}?pick={{ pick.id }}"
+                 class="btn btn-outline-success btn-sm ms-2">Write Review</a>
             {% endif %}
           </div>
         </div>

@@ -1,13 +1,10 @@
 {% extends "base.html" %}
-
 {% block title %}Your Profile{% endblock %}
-
 {% block content %}
   <div class="text-center">
     <h2>Welcome, {{ user.username }}!</h2>
     <p>These are the albums you've submitted:</p>
   </div>
-
   {% if albums %}
     <table class="table table-striped mt-4">
       <thead>

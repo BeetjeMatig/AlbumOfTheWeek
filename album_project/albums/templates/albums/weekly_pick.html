@@ -1,32 +1,31 @@
 {% extends "base.html" %}
-
 {% block title %}Weekly Pick - Album of the Week{% endblock %}
-
 {% block content %}
   <h1 class="mb-4 text-center">Album of the Week</h1>
-
   {% if weekly_pick %}
     <div class="card mx-auto mb-4" style="max-width: 500px;">
-      <div class="card-header bg-dark text-white">
-        {{ weekly_pick.album.artist }} - {{ weekly_pick.album.title }}
-      </div>
+      <div class="card-header bg-dark text-white">{{ weekly_pick.album.artist }} - {{ weekly_pick.album.title }}</div>
       <div class="card-body text-center">
-        <p><strong>Genre:</strong> {{ weekly_pick.album.genre }}</p>
-        <p><strong>Release Year:</strong> {{ weekly_pick.album.release_year }}</p>
+        <p>
+          <strong>Genre:</strong> {{ weekly_pick.album.genre }}
+        </p>
+        <p>
+          <strong>Release Year:</strong> {{ weekly_pick.album.release_year }}
+        </p>
       </div>
     </div>
-
     <!-- Review Buttons -->
-<div class="text-center">
-  <a href="{% url 'view_reviews' %}" class="btn btn-outline-primary mb-3">View All Reviews</a>
-  {% if user.is_authenticated %}
-    <a href="{% url 'write_review' %}" class="btn btn-outline-success mb-3 ms-2">Write Your Review</a>
-  {% else %}
-    <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
-  {% endif %}
-</div>
-
-
+    <div class="text-center">
+      <a href="{% url 'view_reviews' %}" class="btn btn-outline-primary mb-3">View All Reviews</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'write_review' %}"
+           class="btn btn-outline-success mb-3 ms-2">Write Your Review</a>
+      {% else %}
+        <p>
+          <a href="{% url 'login' %}">Log in</a> to write a review.
+        </p>
+      {% endif %}
+    </div>
   {% else %}
     <p class="text-center">No album has been selected for this week yet.</p>
   {% endif %}

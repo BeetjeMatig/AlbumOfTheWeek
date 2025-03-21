@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from .models import Album
 from datetime import date, timedelta
 from .models import WeeklyPick
+from .forms import AlbumForm
 
 def home(request):
     """Home page displaying the current week's album pick."""
@@ -32,7 +33,6 @@ def weekly_pick(request):
         "past_picks": past_picks
     })
 
-
 def album_list(request):
     query = request.GET.get('q', '')
     if query:
@@ -51,3 +51,15 @@ def album_list(request):
         return HttpResponse(html)
     
     return render(request, 'albums/album_list.html', {'albums': albums, 'query': query})
+
+
+def submit_album(request):
+    if request.method == 'POST':
+        form = AlbumForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('album_list')  # Redirect to album list after successful submission
+    else:
+        form = AlbumForm()
+    
+    return render(request, 'albums/submit_album.html', {'form': form})

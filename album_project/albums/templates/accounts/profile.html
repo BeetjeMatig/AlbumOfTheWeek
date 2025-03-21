@@ -3,10 +3,12 @@
 {% block content %}
   <div class="text-center">
     <h2>Welcome, {{ user.username }}!</h2>
-    <p>These are the albums you've submitted:</p>
+    <p class="mb-4">Here you can view your submitted albums and reviews.</p>
   </div>
+  <!-- User's Submitted Albums -->
+  <h3>Your Submitted Albums</h3>
   {% if albums %}
-    <table class="table table-striped mt-4">
+    <table class="table table-striped mt-3">
       <thead>
         <tr>
           <th>Artist</th>
@@ -27,6 +29,24 @@
       </tbody>
     </table>
   {% else %}
-    <p>You haven't submitted any albums yet.</p>
+    <p class="text-muted">You haven't submitted any albums yet.</p>
+  {% endif %}
+  <!-- Weekly Picks the User Hasn't Reviewed Yet -->
+  <h3 class="mt-5">Albums of the Week You Haven't Reviewed Yet</h3>
+  {% if unreviewed_picks %}
+    <ul class="list-group mt-3">
+      {% for pick in unreviewed_picks %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>
+            {{ pick.album.artist }} – {{ pick.album.title }}
+            <small class="text-muted">({{ pick.week_start_date|date:"M d, Y" }})</small>
+          </span>
+          <a href="{% url 'write_review' %}?pick={{ pick.id }}"
+             class="btn btn-sm btn-outline-success">Write Review</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted mt-2">You've reviewed all weekly picks so far — nice!</p>
   {% endif %}
 {% endblock %}

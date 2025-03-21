@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from .forms import AlbumForm
+from .lastfm import get_top_tag, search_albums
 from .models import Album, WeeklyPick
 
 
@@ -104,14 +105,27 @@ def submit_album(request):
     if request.method == 'POST':
         form = AlbumForm(request.POST)
         if form.is_valid():
-            album = form.save(commit=False)  # Don't save yet
-            album.submitted_by = request.user  # Assign logged-in user
-            album.save()  # Now save
-            return redirect('album_list')
+            album = form.save(commit=False)
+            album.submitted_by = request.user
+            album.save()
+            return redirect('profile')
     else:
         form = AlbumForm()
-    
-    return render(request, 'albums/submit_album.html', {'form': form})
+
+    query = request.GET.get("q")
+    search_results = []
+
+    if query:
+        try:
+            search_results = search_albums(query)
+        except Exception as e:
+            print("Last.fm search error:", e)
+
+    return render(request, 'albums/submit_album.html', {
+        'form': form,
+        'search_results': search_results,
+        'query': query,
+    })
 
 
 def register(request):
@@ -126,10 +140,20 @@ def register(request):
     
     return render(request, "registration/register.html", {"form": form})
 
+
 @login_required
 def profile(request):
-    user_albums = Album.objects.filter(submitted_by=request.user)  # Get only their albums
-    return render(request, 'accounts/profile.html', {'user': request.user, 'albums': user_albums})
+    albums = Album.objects.filter(submitted_by=request.user)
+
+    user_reviews = Review.objects.filter(user=request.user)
+    reviewed_ids = user_reviews.values_list('weekly_album_id', flat=True)
+    unreviewed_picks = WeeklyPick.objects.exclude(id__in=reviewed_ids).order_by('-week_start_date')
+
+    return render(request, 'accounts/profile.html', {
+        'albums': albums,
+        'unreviewed_picks': unreviewed_picks,
+    })
+
 
 def previous_picks(request):
     picks = WeeklyPick.objects.order_by('-week_start_date')  # Most recent first

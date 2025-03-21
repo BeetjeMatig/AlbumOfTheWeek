@@ -124,3 +124,13 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
+LASTFM_SHARED_SECRET = os.getenv("LASTFM_SHARED_SECRET")
+

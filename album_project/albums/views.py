@@ -56,12 +56,15 @@ def album_list(request):
     return render(request, 'albums/album_list.html', {'albums': albums, 'query': query})
 
 
+@login_required
 def submit_album(request):
     if request.method == 'POST':
         form = AlbumForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('album_list')  # Redirect to album list after successful submission
+            album = form.save(commit=False)  # Don't save yet
+            album.submitted_by = request.user  # Assign logged-in user
+            album.save()  # Now save
+            return redirect('album_list')
     else:
         form = AlbumForm()
     
@@ -82,4 +85,5 @@ def register(request):
 
 @login_required
 def profile(request):
-    return render(request, 'accounts/profile.html', {'user': request.user})
+    user_albums = Album.objects.filter(submitted_by=request.user)  # Get only their albums
+    return render(request, 'accounts/profile.html', {'user': request.user, 'albums': user_albums})

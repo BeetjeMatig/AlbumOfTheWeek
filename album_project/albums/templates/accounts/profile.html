@@ -5,6 +5,31 @@
 {% block content %}
   <div class="text-center">
     <h2>Welcome, {{ user.username }}!</h2>
-    <p>This is your profile page.</p>
+    <p>These are the albums you've submitted:</p>
   </div>
+
+  {% if albums %}
+    <table class="table table-striped mt-4">
+      <thead>
+        <tr>
+          <th>Artist</th>
+          <th>Album Title</th>
+          <th>Genre</th>
+          <th>Release Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for album in albums %}
+          <tr>
+            <td>{{ album.artist }}</td>
+            <td>{{ album.title }}</td>
+            <td>{{ album.genre }}</td>
+            <td>{{ album.release_year }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>You haven't submitted any albums yet.</p>
+  {% endif %}
 {% endblock %}

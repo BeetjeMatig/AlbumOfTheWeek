@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from .forms import AlbumForm
-from .lastfm import get_top_tag, search_albums
+from .lastfm import search_albums
 from .models import Album, WeeklyPick
 
 

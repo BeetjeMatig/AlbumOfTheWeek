@@ -1,17 +1,24 @@
 {% extends "base.html" %}
 {% block title %}{{ album.title }} by {{ album.artist }}{% endblock %}
 {% block content %}
-    <div class="card mx-auto" style="max-width: 600px;">
-        {% if album.album_art_url %}<img src="{{ album.album_art_url }}" class="card-img-top" alt="Album Art">{% endif %}
-        <div class="card-body">
+    <div class="card mx-auto shadow-lg p-3 mb-5 bg-white rounded"
+         style="max-width: 600px">
+        {% if album.album_art_url %}
+            <img src="{{ album.album_art_url }}"
+                 class="card-img-top"
+                 alt="Album Art"
+                 style="width: 100%;
+                        object-fit: contain;
+                        border-radius: 5px">
+            s
+        {% endif %}
+        <div class="card-body text-center">
             <h3 class="card-title">{{ album.title }}</h3>
             <h5 class="text-muted">by {{ album.artist }}</h5>
+            <hr>
             <ul class="list-group list-group-flush my-3">
                 <li class="list-group-item">
                     <strong>Genre:</strong> {{ album.genre }}
-                </li>
-                <li class="list-group-item">
-                    <strong>Release Year:</strong> {{ album.release_year }}
                 </li>
                 <li class="list-group-item">
                     <strong>Submitted by:</strong> {{ album.submitted_by.username }}
@@ -21,7 +28,8 @@
                 </li>
                 {% if album.lastfm_url %}
                     <li class="list-group-item">
-                        <strong>Last.fm:</strong> <a href="{{ album.lastfm_url }}" target="_blank">{{ album.lastfm_url }}</a>
+                        <strong>Last.fm:</strong>
+                        <a href="{{ album.lastfm_url }}" target="_blank" class="text-primary">View on Last.fm</a>
                     </li>
                 {% endif %}
                 {% if album.mbid %}
@@ -30,7 +38,10 @@
                     </li>
                 {% endif %}
             </ul>
-            <a href="{% url 'album_list' %}" class="btn btn-secondary">Back to All Albums</a>
+            <div class="d-flex justify-content-between mt-3">
+                <a href="{% url 'album_list' %}" class="btn btn-secondary">Back to All Albums</a>
+                <a href="{% url 'profile' %}" class="btn btn-outline-dark">Back to Profile</a>
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -3,11 +3,10 @@
     <td>{{ album.artist }}</td>
     <td>{{ album.title }}</td>
     <td>{{ album.genre }}</td>
-    <td>{{ album.release_year }}</td>
-    <td>{{ album.submitted_by }}</td>
-    <td>
+    <td>{{ album.submitted_by.username }}</td>
+    <td class="text-end">
       <a href="{% url 'album_detail' album.id %}"
-         class="btn btn-sm btn-outline-secondary">Details</a>
+         class="btn btn-sm btn-outline-primary">Details</a>
     </td>
   </tr>
 {% endfor %}

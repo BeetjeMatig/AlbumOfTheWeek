@@ -21,3 +21,19 @@ class WeeklyPick(models.Model):
 
     def __str__(self):
         return f"Week {self.week_start_date} - {self.week_end_date}: {self.album}"
+    
+class Review(models.Model):
+    weekly_album = models.ForeignKey("WeeklyPick", on_delete=models.CASCADE, related_name="reviews")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Link review to a user
+    rating = models.PositiveIntegerField()  # 0-100 rating
+    text = models.TextField()
+    favorite_song = models.CharField(max_length=200)
+    least_favorite_song = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('weekly_album', 'user')  # Ensures one review per user per weekly album
+
+    def __str__(self):
+        return f"Review by {self.user.username} on {self.weekly_album.album.title}"
+

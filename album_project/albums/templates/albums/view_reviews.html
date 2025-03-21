@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews for {{ weekly_pick.album.title }}{% endblock %}
+
+{% block content %}
+  <h2 class="mb-4 text-center">Reviews: {{ weekly_pick.album.artist }} - {{ weekly_pick.album.title }}</h2>
+
+  {% if reviews %}
+    <ul class="list-group mb-4">
+      {% for review in reviews %}
+        <li class="list-group-item">
+          <strong>{{ review.user.username }}</strong> ({{ review.created_at|date:"M d, Y" }})
+          <p><strong>Rating:</strong> {{ review.rating }}/100</p>
+          <p><strong>Favourite Song:</strong> {{ review.favorite_song }}</p>
+          <p><strong>Least Favourite Song:</strong> {{ review.least_favorite_song }}</p>
+          <p>{{ review.text }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No reviews yet.</p>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    <a href="{% url 'write_review' %}" class="btn btn-primary">Write or Edit Your Review</a>
+  {% else %}
+    <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
+  {% endif %}
+{% endblock %}

@@ -1,31 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Home - Album of the Week{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
-  <div class="text-center">
-    <h1>Welcome to Album of the Week!</h1>
-    <p class="lead">Discover new albums and check out our weekly picks.</p>
-  </div>
-
-  <hr>
+  <h1 class="mb-4">Welcome to Album of the Week</h1>
 
   {% if weekly_pick %}
-    <div class="card mx-auto" style="max-width: 500px;">
+    <div class="card mb-4" style="max-width: 600px; margin: auto;">
       <div class="card-header bg-dark text-white">
-        Album of the Week ({{ weekly_pick.week_start_date }} - {{ weekly_pick.week_end_date }})
+        Album of the Week
       </div>
       <div class="card-body text-center">
-        <h5 class="card-title">{{ weekly_pick.album.artist }} - {{ weekly_pick.album.title }}</h5>
-        {% if weekly_pick.album.release_year %}
-          <p class="card-text">Released: {{ weekly_pick.album.release_year }}</p>
-        {% endif %}
-        {% if weekly_pick.album.genre %}
-          <p class="card-text"><strong>Genre:</strong> {{ weekly_pick.album.genre }}</p>
-        {% endif %}
+        <h4>{{ weekly_pick.album.artist }} - {{ weekly_pick.album.title }}</h4>
+        <p><strong>Genre:</strong> {{ weekly_pick.album.genre }}</p>
+        <p><strong>Release Year:</strong> {{ weekly_pick.album.release_year }}</p>
+        <a href="{% url 'weekly_pick' %}" class="btn btn-primary mt-3">View Details</a>
       </div>
     </div>
   {% else %}
-    <p class="text-center">No album has been selected for this week yet.</p>
+    <p>No album has been selected for this week yet.</p>
   {% endif %}
 {% endblock %}

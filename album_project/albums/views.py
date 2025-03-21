@@ -16,25 +16,45 @@ def home(request):
     week_start = today - timedelta(days=today.weekday())  # Get Monday of the current week
     week_end = week_start + timedelta(days=6)  # Sunday of the current week
 
-    weekly_pick = WeeklyPick.objects.filter(week_start_date=week_start).first()
+    weekly_pick = WeeklyPick.objects.order_by('-week_start_date').first()
+    return render(request, 'albums/home.html', {'weekly_pick': weekly_pick})
 
-    return render(request, "albums/home.html", {"weekly_pick": weekly_pick})
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import WeeklyPick, Review
+from .forms import ReviewForm
 
 def weekly_pick(request):
-    """Displays the current album of the week and previous selections."""
-    today = date.today()
-    week_start = today - timedelta(days=today.weekday())  # Get Monday of the current week
+    weekly_pick = WeeklyPick.objects.order_by('-week_start_date').first()
+    return render(request, 'albums/weekly_pick.html', {'weekly_pick': weekly_pick})
 
-    # Get the current week's pick
-    current_pick = WeeklyPick.objects.filter(week_start_date=week_start).first()
+def view_reviews(request):
+    weekly_pick = WeeklyPick.objects.order_by('-week_start_date').first()
+    reviews = Review.objects.filter(weekly_album=weekly_pick) if weekly_pick else None
+    return render(request, 'albums/view_reviews.html', {'weekly_pick': weekly_pick, 'reviews': reviews})
 
-    # Get previous weekly picks
-    past_picks = WeeklyPick.objects.exclude(week_start_date=week_start).order_by('-week_start_date')
+@login_required
+def write_review(request):
+    weekly_pick = WeeklyPick.objects.order_by('-week_start_date').first()
+    if not weekly_pick:
+        return redirect('weekly_pick')
 
-    return render(request, "albums/weekly_pick.html", {
-        "current_pick": current_pick,
-        "past_picks": past_picks
-    })
+    existing_review = Review.objects.filter(weekly_album=weekly_pick, user=request.user).first()
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=existing_review)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.weekly_album = weekly_pick
+            review.user = request.user
+            review.save()
+            return redirect('view_reviews')
+    else:
+        form = ReviewForm(instance=existing_review)
+
+    return render(request, 'albums/write_review.html', {'form': form, 'weekly_pick': weekly_pick})
+
 
 def album_list(request):
     query = request.GET.get('q', '')

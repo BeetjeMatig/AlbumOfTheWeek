@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Write Your Review{% endblock %}
+
+{% block content %}
+  <h2 class="mb-4 text-center">Review: {{ weekly_pick.album.artist }} - {{ weekly_pick.album.title }}</h2>
+
+  <form method="post" class="mb-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Submit Review</button>
+    <a href="{% url 'view_reviews' %}" class="btn btn-secondary ms-2">Back to Reviews</a>
+  </form>
+{% endblock %}

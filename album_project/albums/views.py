@@ -158,3 +158,58 @@ def profile(request):
 def previous_picks(request):
     picks = WeeklyPick.objects.order_by('-week_start_date')  # Most recent first
     return render(request, 'albums/previous_picks.html', {'picks': picks})
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+
+from .lastfm import get_album_info
+
+
+@require_GET
+def fetch_album_info(request):
+    artist = request.GET.get("artist")
+    title = request.GET.get("title")
+
+    if not artist or not title:
+        return JsonResponse({"error": "Missing artist or title"}, status=400)
+
+    try:
+        info = get_album_info(artist, title)
+        return JsonResponse(info)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+import json
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
+
+@csrf_exempt
+@require_POST
+@login_required
+def save_album_from_lastfm(request):
+    data = json.loads(request.body)
+    try:
+        album = Album.objects.create(
+            title=data["title"],
+            artist=data["artist"],
+            genre=data.get("genre", "Unknown"),
+            release_year=0,
+            submitted_by=request.user,
+            album_art_url=data.get("image", ""),
+            lastfm_url=data.get("url", ""),
+            mbid=data.get("mbid", "")
+        )
+        return JsonResponse({"success": True, "album_id": album.id})
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+from django.shortcuts import get_object_or_404
+
+
+def album_detail(request, pk):
+    album = get_object_or_404(Album, pk=pk)
+    return render(request, "albums/album_detail.html", {"album": album})

@@ -22,3 +22,24 @@ def get_top_tag(artist, album):
         return tags[0].item.name if tags else "Unknown"
     except Exception:
         return "Unknown"
+    
+def get_album_info(artist_name, album_title):
+    network = get_lastfm_network()
+    album_obj = network.get_album(artist_name, album_title)
+
+    try:
+        tags = album_obj.get_top_tags()
+        top_tag = tags[0].item.name if tags else "Unknown"
+    except Exception:
+        top_tag = "Unknown"
+
+    return {
+        "title": album_obj.get_title(),
+        "artist": album_obj.get_artist().get_name(),
+        "url": album_obj.get_url(),
+        "image": album_obj.get_cover_image(),
+        "genre": top_tag,
+        "release_year": "Unknown",  # Last.fm often lacks release date — we'll handle this
+        "mbid": album_obj.get_mbid(),
+    }
+

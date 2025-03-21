@@ -2,8 +2,8 @@
 {% block title %}Submit Album{% endblock %}
 {% block content %}
   <h2 class="mb-4">Submit a New Album</h2>
-  <!-- 🔍 Search bar -->
-  <form method="get" class="mb-3">
+  <!-- Search bar -->
+  <form method="get" class="mb-4">
     <input type="text"
            name="q"
            class="form-control"
@@ -11,44 +11,91 @@
            value="{{ query }}">
     <button type="submit" class="btn btn-primary mt-2">Search</button>
   </form>
-  <!-- 🎯 Show results -->
+  <!-- Search results -->
   {% if search_results %}
-    <h5>Select an album to autofill:</h5>
-    <ul class="list-group mb-4">
+    <ul class="list-group">
       {% for result in search_results %}
-        <li class="list-group-item d-flex align-items-center justify-content-between">
-          <div class="d-flex align-items-center">
-            {% with result.get_cover_image as cover %}
-              {% if cover %}
-                <img src="{{ cover }}"
-                     alt="Album Art"
-                     style="width: 40px;
-                            height: 40px;
-                            object-fit: cover;
-                            margin-right: 10px">
-              {% endif %}
-            {% endwith %}
-            <span>{{ result.artist }} – {{ result.title }}</span>
-          </div>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>{{ result.artist }} – {{ result.title }}</span>
           <button class="btn btn-sm btn-outline-info"
-                  onclick="fillForm('{{ result.artist }}', '{{ result.title }}')">Use</button>
+                  onclick="loadAlbumInfo('{{ result.artist }}', '{{ result.title }}')">Select</button>
         </li>
       {% endfor %}
     </ul>
   {% endif %}
-  <!-- ✅ Submission form -->
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Submit Album</button>
-  </form>
-  <!-- 💡 JS to autofill form -->
+  <!-- Album Info Card -->
+  <div id="album-info-card" class="card mt-4 d-none">
+    <div class="card-header bg-dark text-white" id="card-header"></div>
+    <div class="card-body text-center">
+      <img id="album-art"
+           src=""
+           alt="Cover"
+           style="max-height: 150px"
+           class="mb-3">
+      <p>
+        <strong>Genre:</strong> <span id="album-genre"></span>
+      </p>
+      <p>
+        <a id="album-link" href="#" target="_blank">View on Last.fm</a>
+      </p>
+      <button class="btn btn-success" onclick="submitAlbum()">Submit Album</button>
+    </div>
+  </div>
   <script>
-function fillForm(artist, title) {
-  document.getElementById('id_artist').value = artist;
-  document.getElementById('id_title').value = title;
+let albumData = {};
 
-  // Optional: fetch genre via AJAX call to your backend
+function loadAlbumInfo(artist, title) {
+  fetch(`/fetch-album-info/?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(title)}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) return alert(data.error);
+
+      albumData = data;
+
+      document.getElementById("card-header").innerText = `${data.artist} – ${data.title}`;
+      document.getElementById("album-genre").innerText = data.genre;
+      document.getElementById("album-art").src = data.image || '';
+      document.getElementById("album-link").href = data.url;
+
+      document.getElementById("album-info-card").classList.remove("d-none");
+    })
+    .catch(err => alert("Failed to load album info"));
+}
+
+function submitAlbum() {
+  fetch("/save-album-from-lastfm/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken")
+    },
+    body: JSON.stringify(albumData)
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.success) {
+      alert("Album saved successfully!");
+      window.location.href = "/accounts/profile/";
+    } else {
+      alert("Error saving album: " + result.error);
+    }
+  });
+}
+
+// CSRF helper
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith(name + "=")) {
+        cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
 }
   </script>
 {% endblock %}

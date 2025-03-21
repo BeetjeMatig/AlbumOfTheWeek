@@ -5,5 +5,9 @@
     <td>{{ album.genre }}</td>
     <td>{{ album.release_year }}</td>
     <td>{{ album.submitted_by }}</td>
+    <td>
+      <a href="{% url 'album_detail' album.id %}"
+         class="btn btn-sm btn-outline-secondary">Details</a>
+    </td>
   </tr>
 {% endfor %}

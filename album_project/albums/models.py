@@ -1,16 +1,25 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+
 class Album(models.Model):
     title = models.CharField(max_length=200)
     artist = models.CharField(max_length=200)
     genre = models.CharField(max_length=100)
-    release_year = models.IntegerField()
-    submitted_by = models.ForeignKey(User, on_delete=models.CASCADE)  # Now linked to User
+    release_year = models.IntegerField(default=0)  # Optional: parse from Last.fm if available
+
+    # New fields from Last.fm
+    album_art_url = models.URLField(blank=True)
+    lastfm_url = models.URLField(blank=True)
+    lastfm_id = models.CharField(max_length=100, blank=True)
+    mbid = models.CharField(max_length=100, blank=True)
+
+    submitted_by = models.ForeignKey(User, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.artist} - {self.title}"
+        return f"{self.artist} – {self.title}"
+
 
 
 class WeeklyPick(models.Model):

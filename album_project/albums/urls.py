@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home, album_list, weekly_pick, submit_album, view_reviews, write_review
+from .views import home, album_list, weekly_pick, submit_album, view_reviews, write_review, previous_picks
 
 urlpatterns = [
     path('', home, name='home'),
@@ -7,5 +7,6 @@ urlpatterns = [
     path('weekly-pick/', weekly_pick, name='weekly_pick'),
     path('weekly-pick/review/', write_review, name='write_review'),
     path('weekly-pick/reviews/', view_reviews, name='view_reviews'),
+    path('weekly-pick/history/', previous_picks, name='previous_picks'),
     path('submit/', submit_album, name='submit_album'),
 ]

@@ -9,6 +9,8 @@ from .forms import AlbumForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 def home(request):
     """Home page displaying the current week's album pick."""
@@ -30,13 +32,27 @@ def weekly_pick(request):
     return render(request, 'albums/weekly_pick.html', {'weekly_pick': weekly_pick})
 
 def view_reviews(request):
-    weekly_pick = WeeklyPick.objects.order_by('-week_start_date').first()
+    pick_id = request.GET.get("pick")
+    if pick_id:
+        weekly_pick = get_object_or_404(WeeklyPick, id=pick_id)
+    else:
+        weekly_pick = WeeklyPick.objects.order_by('-week_start_date').first()
+
     reviews = Review.objects.filter(weekly_album=weekly_pick) if weekly_pick else None
     return render(request, 'albums/view_reviews.html', {'weekly_pick': weekly_pick, 'reviews': reviews})
 
+
 @login_required
 def write_review(request):
-    weekly_pick = WeeklyPick.objects.order_by('-week_start_date').first()
+    from django.urls import reverse
+    from django.http import HttpResponseRedirect
+
+    pick_id = request.GET.get("pick")
+    if pick_id:
+        weekly_pick = get_object_or_404(WeeklyPick, id=pick_id)
+    else:
+        weekly_pick = WeeklyPick.objects.order_by('-week_start_date').first()
+
     if not weekly_pick:
         return redirect('weekly_pick')
 
@@ -49,11 +65,15 @@ def write_review(request):
             review.weekly_album = weekly_pick
             review.user = request.user
             review.save()
-            return redirect('view_reviews')
+            return HttpResponseRedirect(f"{reverse('view_reviews')}?pick={weekly_pick.id}")
     else:
-        form = ReviewForm(instance=existing_review)
+        form = ReviewForm(instance=existing_review)  # 🔥 THIS fixes the error
 
-    return render(request, 'albums/write_review.html', {'form': form, 'weekly_pick': weekly_pick})
+    return render(request, 'albums/write_review.html', {
+        'form': form,
+        'weekly_pick': weekly_pick,
+    })
+
 
 
 def album_list(request):
@@ -107,3 +127,7 @@ def register(request):
 def profile(request):
     user_albums = Album.objects.filter(submitted_by=request.user)  # Get only their albums
     return render(request, 'accounts/profile.html', {'user': request.user, 'albums': user_albums})
+
+def previous_picks(request):
+    picks = WeeklyPick.objects.order_by('-week_start_date')  # Most recent first
+    return render(request, 'albums/previous_picks.html', {'picks': picks})

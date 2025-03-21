@@ -18,7 +18,26 @@
             <hr>
             <ul class="list-group list-group-flush my-3">
                 <li class="list-group-item">
-                    <strong>Genre:</strong> {{ album.genre }}
+                    <strong>Genre:</strong>
+                    {{ album.genre }}
+                    {% if user == album.submitted_by %}
+                        <!-- ✏️ Edit Button -->
+                        <button class="btn btn-sm btn-link text-decoration-none ms-2"
+                                onclick="toggleGenreEdit()">✏️ Edit</button>
+                        <!-- 📝 Genre Edit Form -->
+                        <form method="post" class="mt-2 d-none" id="genre-edit-form">
+                            {% csrf_token %}
+                            <div class="input-group input-group-sm">
+                                <input type="text"
+                                       name="new_genre"
+                                       class="form-control"
+                                       value="{{ album.genre }}"
+                                       placeholder="Enter new genre"
+                                       required>
+                                <button class="btn btn-outline-primary" type="submit">Save</button>
+                            </div>
+                        </form>
+                    {% endif %}
                 </li>
                 <li class="list-group-item">
                     <strong>Submitted by:</strong> {{ album.submitted_by.username }}
@@ -44,4 +63,10 @@
             </div>
         </div>
     </div>
+    <script>
+        function toggleGenreEdit() {
+          const form = document.getElementById("genre-edit-form");
+          form.classList.toggle("d-none");
+        }
+    </script>
 {% endblock %}

@@ -207,9 +207,23 @@ def save_album_from_lastfm(request):
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
-from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .models import Album
 
 
+@login_required
 def album_detail(request, pk):
     album = get_object_or_404(Album, pk=pk)
+
+    # ✅ Handle genre update
+    if request.method == "POST" and request.user == album.submitted_by:
+        new_genre = request.POST.get("new_genre", "").strip()
+        if new_genre:
+            album.genre = new_genre
+            album.save()
+            return redirect("album_detail", pk=pk)
+
     return render(request, "albums/album_detail.html", {"album": album})
+
